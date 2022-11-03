@@ -12,7 +12,8 @@ java {
 afterEvaluate {
     publishing {
         publications {
-            release(MavenPublication) {
+            maven(MavenPublication) {
+                from components.java
                 groupId = 'aliernfrog'
                 artifactId = 'ensi-generation'
                 version = library_version
