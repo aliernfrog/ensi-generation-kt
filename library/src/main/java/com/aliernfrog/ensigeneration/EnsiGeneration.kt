@@ -75,7 +75,10 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
  * @param replaceWith [String] [Unit] to replace [oldString]
  */
 private fun String.replaceEach(oldString: String, replaceWith: () -> String): String {
-    val occurences = this.count { it.toString() == oldString }
-    for (i in 0..occurences) this.replaceFirst(oldString, replaceWith())
-    return this
+    var finalString = this
+    val occurences = finalString.count { it.toString() == oldString }
+    for (i in 0..occurences) {
+        finalString = finalString.replaceFirst(oldString, replaceWith())
+    }
+    return finalString
 }
