@@ -11,9 +11,9 @@ data class EnsiConfig(
     val concs: Set<String> = setOf("and","but","when","even though","before","after","while","when"),
     val emotions: Set<String> = setOf("what the fuck","fuck","shit","woow","wow","oh god","omg","omfg"),
     val others: Set<String> = setOf("unfortunately","fortunately","luckily","finally","thankfully","at least","weirdly","in fact","actually","fr","for real"),
+    val positions: Set<String> = setOf("in %","at %","on %","behind %","under %","between % and %"),
     // TYPES
     val normalTypes: Set<String> = setOf("%WORD_VERB%","%WORD_COUNTED%","%CHARS% was %WORD_VERB%","%CHARS% %EDVERB%","%VERB% %CHARS%"),
     val questionTypes: Set<String> = setOf("was %CHARS% %VERB%?","was %CHARS% %INGVERB% %CHARS%?","was %CHARS% %INGVERB% %WORD_COUNTED%?","was %CHARS% %WORD_COUNTED%?"),
-    val startingTypes: Set<String> = setOf("%TIME%, ","%TIME% %PLACE%, ","%PLACE%, "),
-    val placeTypes: Set<String> = setOf("in %LOCATION%","at %LOCATION%","on %LOCATION%","behind %LOCATION%","under %LOCATION%","between %LOCATION% and %LOCATION%")
+    val startingTypes: Set<String> = setOf("%TIME%, ","%TIME% %PLACE%, ","%PLACE%, ")
 )

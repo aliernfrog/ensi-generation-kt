@@ -49,7 +49,7 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
         return string
             .replaceEach("%TIME%") { config.times.random() }
             .replaceEach("%CHARS%") { getChars(wordAsChar) }
-            .replaceEach("%PLACE%") { replacePlaceholders(config.placeTypes.random()) }
+            .replaceEach("%PLACE%") { getLocation() }
             .replaceEach("%CONC%") { config.concs.random() }
             .replaceEach("%EMOTION%") { config.emotions.random() }
             .replaceEach("%OTHER%") { config.others.random() }
@@ -59,7 +59,6 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
             .replaceEach("%INGVERB%") { config.ingVerbs.random() }
             .replaceEach("%WORD_COUNTED%") { getWords() }
             .replaceEach("%WORD_VERB%") { setOf(config.words,config.verbs).random().random() }
-            .replaceEach("%LOCATION%") { getLocation() }
     }
 
     private fun getChars(wordAsChar: Boolean): String {
@@ -83,7 +82,7 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
         val owner = !disableOwner && (1..10).random() == 1
         var finalString = setOf(config.chars,config.places,config.words).random().random()
         if (owner) finalString += "'s ${getLocation(true)}"
-        return finalString
+        return config.positions.random().replaceEach("%") { config.places.random() }
     }
 
     private fun pluralString(strings: MutableList<String>): String {
@@ -99,7 +98,8 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
      */
     private fun manageCaps(string: String, generationType: String): String {
         return when(generationType) {
-            EnsiGenerationType.LEGIT -> string.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            EnsiGenerationType.LEGIT -> string.replaceFirstChar { if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()) else it.toString() }
             EnsiGenerationType.ALLCAPS -> string.uppercase()
             else -> string
         }
