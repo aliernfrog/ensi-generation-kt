@@ -1,5 +1,8 @@
 package com.aliernfrog.ensigeneration
 
+import java.util.*
+import kotlin.collections.ArrayList
+
 class EnsiGeneration(ensiConfig: EnsiConfig) {
     private val config = ensiConfig
     private val punctuations = setOf(".",".",".",".",".",".",".",".","..","...","!","!!","?","??","?!","!?")
@@ -96,7 +99,7 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
      */
     private fun manageCaps(string: String, generationType: String): String {
         return when(generationType) {
-            EnsiGenerationType.LEGIT -> string.elementAt(0).uppercase()+string.slice(IntRange(0,1))
+            EnsiGenerationType.LEGIT -> string.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             EnsiGenerationType.ALLCAPS -> string.uppercase()
             else -> string
         }
