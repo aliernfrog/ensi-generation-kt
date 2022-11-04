@@ -10,6 +10,7 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
      * @param types: A [Set] of sentence type strings which will be randomized on generation
      * @param sentenceCount: Count of sentences to be generated
      * @param addStartingSentence: Adds a starting phrase at the beginning of first sentence
+     * @param wordAsChar: If words can be used as characters
      * @param questionsAllowed: Randomly adds question-type sentences
      * @param punctuationsAllowed: Adds punctuations
      */
@@ -18,6 +19,7 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
         types: Set<String> = config.normalTypes,
         sentenceCount: Int = (1..5).random(),
         addStartingSentence: Boolean = (1..3).random() == 1,
+        wordAsChar: Boolean = false,
         questionsAllowed: Boolean = true,
         punctuationsAllowed: Boolean = generationType == EnsiGenerationType.LEGIT
     ): String {
@@ -27,9 +29,9 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
             val type = if (isQuestion) config.questionTypes.random() else types.random()
             val addSubSentence = !isQuestion && (1..10).random() == 1
             var sentence = ""
-            if (i == 0 && addStartingSentence) sentence += replacePlaceholders(config.startingTypes.random())
-            sentence += replacePlaceholders(type)
-            if (addSubSentence) sentence += replacePlaceholders("${setOf(",","").random()} %CONC% ${types.random()}")
+            if (i == 0 && addStartingSentence) sentence += replacePlaceholders(config.startingTypes.random(), wordAsChar)
+            sentence += replacePlaceholders(type, wordAsChar)
+            if (addSubSentence) sentence += replacePlaceholders("${setOf(",","").random()} %CONC% ${types.random()}", wordAsChar)
             if (punctuationsAllowed && !isQuestion) sentence += punctuations.random()
             sentences.add(manageCaps(sentence, generationType))
         }
@@ -40,11 +42,11 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
      * Replaces all %PLACEHOLDER%s with corresponding strings
      * @param string [String] which contains placeholders to be replaced
      */
-    private fun replacePlaceholders(string: String): String {
+    private fun replacePlaceholders(string: String, wordAsChar: Boolean = false): String {
         return string
             .replaceEach("%TIME%") { config.times.random() }
-            //TODO .replaceEach("%CHARS%") { "" }
-            //TODO .replaceEach("%PLACE%") { "" }
+            .replaceEach("%CHARS%") { getChars(wordAsChar) }
+            .replaceEach("%PLACE%") { replacePlaceholders(config.placeTypes.random()) }
             .replaceEach("%CONC%") { config.concs.random() }
             .replaceEach("%EMOTION%") { config.emotions.random() }
             .replaceEach("%OTHER%") { config.others.random() }
@@ -52,9 +54,41 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
             .replaceEach("%VERB%") { config.verbs.random() }
             .replaceEach("%EDVERB%") { config.edVerbs.random() }
             .replaceEach("%INGVERB%") { config.ingVerbs.random() }
-            //TODO .replaceEach("%WORD_COUNTED%") { "" }
+            .replaceEach("%WORD_COUNTED%") { getWords() }
             .replaceEach("%WORD_VERB%") { setOf(config.words,config.verbs).random().random() }
-            //TODO .replaceEach("%LOCATION%") { "" }
+            .replaceEach("%LOCATION%") { getLocation() }
+    }
+
+    private fun getChars(wordAsChar: Boolean): String {
+        val chars: MutableList<String> = ArrayList()
+        val charCount = (1..3).random()
+        for (i in 0..charCount) chars.add(
+            if (wordAsChar) setOf(config.chars,config.words).random().random()
+            else config.chars.random()
+        )
+        return pluralString(chars)
+    }
+
+    private fun getWords(): String {
+        val words: MutableList<String> = ArrayList()
+        val wordCount = (1..3).random()
+        for (i in 0..wordCount) words.add(config.words.random())
+        return pluralString(words)
+    }
+
+    private fun getLocation(disableOwner: Boolean = false): String {
+        val owner = !disableOwner && (1..10).random() == 1
+        var finalString = setOf(config.chars,config.places,config.words).random().random()
+        if (owner) finalString += "'s ${getLocation(true)}"
+        return finalString
+    }
+
+    private fun pluralString(strings: MutableList<String>): String {
+        return when(strings.size) {
+            1 -> strings[0]
+            2 -> "${strings[0]} and ${strings[1]}"
+            else -> strings.joinToString(", ")
+        }
     }
 
     /**
