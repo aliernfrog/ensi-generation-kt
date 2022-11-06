@@ -111,8 +111,8 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
  */
 private fun String.replaceEach(oldString: String, replaceWith: () -> String): String {
     var finalString = this
-    val occurences = finalString.count { it.toString() == oldString }
-    for (i in 0..occurences) {
+    val occurrences = finalString.split(oldString).size - 1
+    for (i in 0..occurrences) {
         finalString = finalString.replaceFirst(oldString, replaceWith())
     }
     return finalString
