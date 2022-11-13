@@ -1,43 +1,29 @@
 package com.aliernfrog.ensigeneration
 
+import com.aliernfrog.ensigeneration.data.EnsiConfig
+import com.aliernfrog.ensigeneration.data.EnsiGenerationOptions
 import kotlin.collections.ArrayList
 
 class EnsiGeneration(ensiConfig: EnsiConfig) {
-    private val config = ensiConfig
+    val config = ensiConfig
     private val punctuations = setOf(".",".",".",".",".",".",".",".","..","...","!","!!","?","??","?!","!?")
 
     /**
      * Generates a [String] of sentences
-     * @param generationType: [EnsiGenerationType] to be used
-     * @param types: A [Set] of sentence type strings which will be randomized on generation
-     * @param sentenceCount: Count of sentences to be generated
-     * @param addStartingSentence: Adds a starting phrase at the beginning of first sentence
-     * @param wordAsChar: If words can be used as characters
-     * @param questionsAllowed: Randomly adds question-type sentences
-     * @param punctuationsAllowed: Adds punctuations
-     * @param subSentencesAllowed: Randomly adds a second sentence after sentences
+     * @param options: [EnsiGenerationOptions] to be used
      */
-    fun generate(
-        generationType: String = EnsiGenerationType.RAW,
-        types: Set<String> = config.normalTypes,
-        sentenceCount: Int = (1..5).random(),
-        addStartingSentence: Boolean = (1..3).random() == 1,
-        wordAsChar: Boolean = false,
-        questionsAllowed: Boolean = true,
-        punctuationsAllowed: Boolean = generationType == EnsiGenerationType.LEGIT,
-        subSentencesAllowed: Boolean = true
-    ): String {
+    fun generate(options: EnsiGenerationOptions = EnsiGenerationOptions(config.normalTypes)): String {
         val sentences: MutableList<String> = ArrayList()
-        for (i in 0..sentenceCount) {
-            val isQuestion = questionsAllowed && (1..10).random() == 1
-            val type = if (isQuestion) config.questionTypes.random() else types.random()
-            val addSubSentence = subSentencesAllowed && !isQuestion && (1..10).random() == 1
+        for (i in 0..options.sentenceCount) {
+            val isQuestion = options.questionsAllowed && (1..10).random() == 1
+            val type = if (isQuestion) config.questionTypes.random() else options.types.random()
+            val addSubSentence = options.subSentencesAllowed && !isQuestion && (1..10).random() == 1
             var sentence = ""
-            if (i == 0 && addStartingSentence) sentence += replacePlaceholders(config.startingTypes.random(), wordAsChar)
-            sentence += replacePlaceholders(type, wordAsChar)
-            if (addSubSentence) sentence += replacePlaceholders("${setOf(",","").random()} %CONC% ${types.random()}", wordAsChar)
-            if (punctuationsAllowed && !isQuestion) sentence += punctuations.random()
-            sentences.add(manageCaps(sentence, generationType))
+            if (i == 0 && options.addStartingSentence) sentence += replacePlaceholders(config.startingTypes.random(), options.wordAsChar)
+            sentence += replacePlaceholders(type, options.wordAsChar)
+            if (addSubSentence) sentence += replacePlaceholders("${setOf(",","").random()} %CONC% ${options.types.random()}", options.wordAsChar)
+            if (options.punctuationsAllowed && !isQuestion) sentence += punctuations.random()
+            sentences.add(manageCaps(sentence, options.generationType))
         }
         return sentences.joinToString(" ")
     }

@@ -1,4 +1,6 @@
-package com.aliernfrog.ensigeneration
+package com.aliernfrog.ensigeneration.data
+
+import com.aliernfrog.ensigeneration.EnsiConfigDefaults
 
 data class EnsiConfig(
     var words: Set<String> = EnsiConfigDefaults.words,
