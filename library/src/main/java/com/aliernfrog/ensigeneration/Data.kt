@@ -15,5 +15,17 @@ data class EnsiConfig(
     // TYPES
     val normalTypes: Set<String> = EnsiConfigDefaults.normalTypes,
     val questionTypes: Set<String> = EnsiConfigDefaults.questionTypes,
-    val startingTypes: Set<String> = EnsiConfigDefaults.startingTypes
+    val startingTypes: Set<String> = EnsiConfigDefaults.startingTypes,
+    // GENERATION OPTIONS
+    val sentenceCountRange: Range = EnsiConfigDefaults.sentenceCountRange,
+    val wordAsCharAllowed: Boolean = EnsiConfigDefaults.wordAsCharAllowed,
+    val startingSentenceAllowed: Boolean = EnsiConfigDefaults.startingSentenceAllowed,
+    val questionsAllowed: Boolean = EnsiConfigDefaults.questionsAllowed,
+    val punctuationsAllowed: Boolean = EnsiConfigDefaults.punctuationsAllowed,
+    val subSentencesAllowed: Boolean = EnsiConfigDefaults.subSentencesAllowed
+)
+
+data class Range(
+    val min: Int,
+    val max: Int
 )

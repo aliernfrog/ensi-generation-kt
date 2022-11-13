@@ -11,20 +11,20 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
      * @param generationType: [EnsiGenerationType] to be used
      * @param types: A [Set] of sentence type strings which will be randomized on generation
      * @param sentenceCount: Count of sentences to be generated
-     * @param wordAsChar: If words can be used as characters
+     * @param wordAsCharAllowed: If words can be used as characters
      * @param startingSentenceAllowed: Randomly adds starting sentence before the first sentence
      * @param questionsAllowed: Randomly adds question-type sentences
-     * @param punctuationsAllowed: Adds punctuations
+     * @param addPunctuations: Adds punctuations
      * @param subSentencesAllowed: Randomly adds a second sentence after sentences
      */
     fun generate(
         generationType: String = EnsiGenerationType.RAW,
         types: Set<String> = config.normalTypes,
-        sentenceCount: Int = (1..5).random(),
-        wordAsChar: Boolean = false,
-        startingSentenceAllowed: Boolean = true,
-        questionsAllowed: Boolean = true,
-        punctuationsAllowed: Boolean = generationType == EnsiGenerationType.LEGIT,
+        sentenceCount: Int = (config.sentenceCountRange.min..config.sentenceCountRange.max).random(),
+        wordAsCharAllowed: Boolean = config.wordAsCharAllowed,
+        startingSentenceAllowed: Boolean = config.startingSentenceAllowed,
+        questionsAllowed: Boolean = config.questionsAllowed,
+        addPunctuations: Boolean = config.punctuationsAllowed && generationType == EnsiGenerationType.LEGIT,
         subSentencesAllowed: Boolean = true
     ): String {
         val sentences: MutableList<String> = ArrayList()
@@ -34,10 +34,10 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
             val addStartingSentence = startingSentenceAllowed && i == 0 && (1..3).random() == 1
             val addSubSentence = subSentencesAllowed && !isQuestion && (1..10).random() == 1
             var sentence = ""
-            if (i == 0 && addStartingSentence) sentence += replacePlaceholders(config.startingTypes.random(), wordAsChar)
-            sentence += replacePlaceholders(type, wordAsChar)
-            if (addSubSentence) sentence += replacePlaceholders("${setOf(",","").random()} %CONC% ${types.random()}", wordAsChar)
-            if (punctuationsAllowed && !isQuestion) sentence += punctuations.random()
+            if (i == 0 && addStartingSentence) sentence += replacePlaceholders(config.startingTypes.random(), wordAsCharAllowed)
+            sentence += replacePlaceholders(type, wordAsCharAllowed)
+            if (addSubSentence) sentence += replacePlaceholders("${setOf(",","").random()} %CONC% ${types.random()}", wordAsCharAllowed)
+            if (addPunctuations && !isQuestion) sentence += punctuations.random()
             sentences.add(manageCaps(sentence, generationType))
         }
         return sentences.joinToString(" ")
@@ -47,10 +47,10 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
      * Replaces all %PLACEHOLDER%s with corresponding strings
      * @param string [String] which contains placeholders to be replaced
      */
-    private fun replacePlaceholders(string: String, wordAsChar: Boolean = false): String {
+    private fun replacePlaceholders(string: String, wordAsCharAllowed: Boolean = false): String {
         return string
             .replaceEach("%TIME%") { config.times.random() }
-            .replaceEach("%CHARS%") { getChars(wordAsChar) }
+            .replaceEach("%CHARS%") { getChars(wordAsCharAllowed) }
             .replaceEach("%PLACE%") { getLocation() }
             .replaceEach("%CONC%") { config.concs.random() }
             .replaceEach("%EMOTION%") { config.emotions.random() }
@@ -63,11 +63,11 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
             .replaceEach("%WORD_VERB%") { setOf(config.words,config.verbs).random().random() }
     }
 
-    private fun getChars(wordAsChar: Boolean): String {
+    private fun getChars(wordAsCharAllowed: Boolean): String {
         val chars: MutableList<String> = ArrayList()
         val charCount = (1..3).random()
         for (i in 0..charCount) chars.add(
-            if (wordAsChar) setOf(config.chars,config.words).random().random()
+            if (wordAsCharAllowed) setOf(config.chars,config.words).random().random()
             else config.chars.random()
         )
         return pluralString(chars)

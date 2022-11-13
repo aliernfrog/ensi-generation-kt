@@ -37,4 +37,11 @@ object EnsiConfigDefaults {
     val normalTypes = setOf("%WORD_VERB%","%WORD_COUNTED%","%CHARS% was %WORD_VERB%","%CHARS% %EDVERB%","%VERB% %CHARS%")
     val questionTypes = setOf("was %CHARS% %VERB%?","was %CHARS% %INGVERB% %CHARS%?","was %CHARS% %INGVERB% %WORD_COUNTED%?","was %CHARS% %WORD_COUNTED%?")
     val startingTypes = setOf("%TIME%, ","%TIME% %PLACE%, ","%PLACE%, ")
+    // GENERATION OPTIONS
+    val sentenceCountRange = Range(1,5)
+    const val wordAsCharAllowed = true
+    const val startingSentenceAllowed = true
+    const val questionsAllowed = true
+    const val punctuationsAllowed = true
+    const val subSentencesAllowed = true
 }
