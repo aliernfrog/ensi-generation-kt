@@ -15,6 +15,7 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
      * @param wordAsChar: If words can be used as characters
      * @param questionsAllowed: Randomly adds question-type sentences
      * @param punctuationsAllowed: Adds punctuations
+     * @param subSentencesAllowed: Randomly adds a second sentence after sentences
      */
     fun generate(
         generationType: String = EnsiGenerationType.RAW,
@@ -23,13 +24,14 @@ class EnsiGeneration(ensiConfig: EnsiConfig) {
         addStartingSentence: Boolean = (1..3).random() == 1,
         wordAsChar: Boolean = false,
         questionsAllowed: Boolean = true,
-        punctuationsAllowed: Boolean = generationType == EnsiGenerationType.LEGIT
+        punctuationsAllowed: Boolean = generationType == EnsiGenerationType.LEGIT,
+        subSentencesAllowed: Boolean = true
     ): String {
         val sentences: MutableList<String> = ArrayList()
         for (i in 0..sentenceCount) {
             val isQuestion = questionsAllowed && (1..10).random() == 1
             val type = if (isQuestion) config.questionTypes.random() else types.random()
-            val addSubSentence = !isQuestion && (1..10).random() == 1
+            val addSubSentence = subSentencesAllowed && !isQuestion && (1..10).random() == 1
             var sentence = ""
             if (i == 0 && addStartingSentence) sentence += replacePlaceholders(config.startingTypes.random(), wordAsChar)
             sentence += replacePlaceholders(type, wordAsChar)
