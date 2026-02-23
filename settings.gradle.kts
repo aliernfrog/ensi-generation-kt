@@ -12,5 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "EnsiGeneration"
-include ':library'
+
+rootProject.name = "Ensi"
+include(":lib")
