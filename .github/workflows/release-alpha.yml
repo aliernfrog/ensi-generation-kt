@@ -1,0 +1,36 @@
+name: Release alpha
+
+on:
+  push:
+    tags:
+      - "**-alpha**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Generate changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          writeToFile: false
+          excludeTypes: ci,other,style
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.20.0
+        with:
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          prerelease: true
+          name: ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changes }}
+          token: ${{ github.token }}
